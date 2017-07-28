@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import QuizOptions from './QuizOptions';
+import classNames from 'classnames';
 
 class Quiz extends Component{
    constructor(props){
@@ -11,6 +12,8 @@ class Quiz extends Component{
 
       this.state = {riddle};
       this.renderOptions = this.renderOptions.bind(this);
+      this.renderMessage = this.renderMessage.bind(this);
+      this.playAgain = this.playAgain.bind(this);
       this.checkResults = this.checkResults.bind(this);
    }
 
@@ -33,7 +36,11 @@ class Quiz extends Component{
          answer: result
       };
 
-      return riddle;
+      if(this.state && this.state.gameOver){
+         this.setState({riddle: riddle})
+      }else{
+         return riddle;
+      }
    }
 
    generateRandomOptions(sum, length){
@@ -76,6 +83,19 @@ class Quiz extends Component{
       );
    }
 
+   playAgain(){
+      this.setState({correct: false, gameOver: false});
+      this.playGame();
+   }
+
+   renderMessage(){
+      if (this.state.correct){
+         return <h3>Correct :)</h3>
+      }else{
+         return <h3>Wrong :(</h3>
+      }
+   }
+
 	render(){
 		return (
       <div className="quiz">
@@ -83,8 +103,11 @@ class Quiz extends Component{
             <p className="question">What is the sum of <span className="text-info">{this.state.riddle.field1}</span> and <span className="text-info">{this.state.riddle.field2}</span>?</p>
             {this.renderOptions()}
          </div>
+         <div className={classNames("after", {"hide": !this.state.gameOver}, {"wrong": !this.state.correct}, {"correct": this.state.correct})}>
+            {this.renderMessage()}
+         </div>
          <div className="play-again">
-            <a className="button">Play Again</a>
+            <a className="button" onClick={this.playAgain}>Play Again</a>
          </div>
       </div>
 		);
